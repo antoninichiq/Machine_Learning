@@ -1,0 +1,54 @@
+import pandas as pd
+pd.set_option('display.max_columns',64)
+pd.set_option('display.max_rows',64)
+arquivo = pd.read_csv("C:/Users/anton/Downloads/archive (4)/Data_train_reduced.csv")
+
+def processamento(arquivo,a=False):
+    #print(arquivo.head())
+    #print(arquivo.shape)
+    #print(arquivo.dtypes)
+    if a:
+        faltantes = arquivo.isnull().sum()
+        faltantes_percentual = (faltantes / len(arquivo['Product'])) * 100
+        print(faltantes_percentual)
+
+    arquivo.drop('q8.20', axis=1, inplace=True)
+    arquivo.drop('q8.18', axis=1, inplace=True)
+    arquivo.drop('q8.17', axis=1, inplace=True)
+    arquivo.drop('q8.10', axis=1, inplace=True)
+    arquivo.drop('q8.9', axis=1, inplace=True)
+    arquivo.drop('q8.8', axis=1, inplace=True)
+    arquivo.drop('q8.2', axis=1, inplace=True)
+    arquivo.drop('Respondent.ID', axis=1, inplace=True)
+    arquivo.drop('Product', axis=1, inplace=True)
+    arquivo.drop('q1_1.personal.opinion.of.this.Deodorant', axis=1, inplace=True)
+
+    arquivo['q8.12'].fillna(arquivo['q8.12'].median(), inplace=True)
+    arquivo['q8.7'].fillna(arquivo['q8.7'].median(), inplace=True)
+    
+    return arquivo
+
+arquivo = processamento(arquivo)
+y = arquivo['Instant.Liking']
+x = arquivo.drop('Instant.Liking', axis = 1)
+
+import numpy as np
+from sklearn. linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV #Não explicou como isso funciona
+
+#Definindo os valores que serão testados em LogisticRegression:
+valores_C = np.array([0.01, 0.1, 0.5, 1, 2, 3, 5, 10, 20, 50, 100])
+regularizacao = ['l1','l2']
+valores_grid = {'C':valores_C, 'penalty':regularizacao}
+
+#Criação do modelo:
+modelo = LogisticRegression(max_iter=5000)
+
+#Criando os grids:
+grid_regressao_logistica = GridSearchCV(estimator = modelo, param_grid = valores_grid, cv=5)
+grid_regressao_logistica.fit(x,y)
+
+#Imprimindo a melhor acurácia e os melhores parâmetros:
+print("Melhor acurácia: ", grid_regressao_logistica.best_score_)
+print(f"Parametro C: ", grid_regressao_logistica.best_estimator_.C)
+print("Regularizacao: ", grid_regressao_logistica.best_estimator_.penalty)
