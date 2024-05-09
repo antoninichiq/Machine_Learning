@@ -208,5 +208,3 @@ def gradient_boosting(stratified=False,random=False,grid=False,bagging=False):
         print ("criterion: ", gridGradient.best_estimator_.criterion)
         print ("Acurácia: ", gridGradient.best_score_)
 # gradient_boosting(grid=True) # acuracia de 0.944
-
-# Deveria testar Ada Boost, Extra Trees, ramdom forest. Mas vi a resposta e o melhor é o gradient boosting.
